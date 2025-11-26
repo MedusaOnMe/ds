@@ -9,7 +9,7 @@ const comicNeue = Comic_Neue({
 });
 
 export const metadata: Metadata = {
-  title: 'WOJAKIFY',
+  title: 'JAKIFICATION',
   description: 'Transform any image into a Wojak meme',
 };
 

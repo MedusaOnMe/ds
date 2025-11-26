@@ -119,7 +119,7 @@ export default function Home() {
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-6xl font-bold text-gray-800 mb-2" style={{ textShadow: '4px 4px 0 #4a90a4' }}>
-            WOJAKIFY
+            JAKIFICATION
           </h1>
           <p className="text-xl text-gray-600">transform any image into a wojak meme</p>
           <p className="text-sm text-gray-500 mt-1">tfw you become a feels guy</p>
@@ -202,7 +202,7 @@ export default function Home() {
                 {isTransforming ? (
                   <span className="pulse-slow">{loadingMessage}</span>
                 ) : (
-                  'WOJAKIFY ME'
+                  'JAKIFY ME'
                 )}
               </button>
 
