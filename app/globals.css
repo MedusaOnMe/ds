@@ -5,7 +5,6 @@
 }
 
 body {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
   background-color: #fafafa;
   background-image:
     linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
@@ -25,7 +24,6 @@ body {
   border-radius: 4px;
   box-shadow: 4px 4px 0 #333;
   color: white;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
   font-weight: bold;
   padding: 12px 24px;
   cursor: pointer;
