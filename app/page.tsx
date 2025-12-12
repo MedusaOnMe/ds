@@ -139,7 +139,7 @@ export default function Home() {
       <div className="max-w-5xl mx-auto">
         {/* CA Banner */}
         <div className="text-center mb-4">
-          <p className="font-semibold text-disney-gold/80 tracking-wider text-sm">CA: coming soon</p>
+          <p className="font-semibold text-disney-gold/80 tracking-wider text-sm">CA: A62X99RymdBuT2uAH7m8czJVxHsThgPDHi4yJWPpump</p>
         </div>
 
         {/* Header */}
