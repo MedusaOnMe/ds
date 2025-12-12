@@ -6,9 +6,6 @@ const validStyles: DisneyStyle[] = [
   'pixar-3d',
   'classic-disney',
   'disney-princess',
-  'disney-villain',
-  'frozen-style',
-  'encanto-style',
 ];
 
 export async function POST(request: NextRequest) {

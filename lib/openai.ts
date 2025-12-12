@@ -1,16 +1,20 @@
 import OpenAI, { toFile } from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openai;
+}
 
 export type DisneyStyle =
   | 'pixar-3d'
   | 'classic-disney'
-  | 'disney-princess'
-  | 'disney-villain'
-  | 'frozen-style'
-  | 'encanto-style';
+  | 'disney-princess';
 
 const stylePrompts: Record<DisneyStyle, string> = {
   'pixar-3d': `Transform this image into a Pixar 3D animated character style. Apply these characteristics:
@@ -42,36 +46,6 @@ const stylePrompts: Record<DisneyStyle, string> = {
     - Dreamy atmosphere with soft lighting
     - Rich, jewel-toned colors with golden accents
     - Romantic, storybook quality lighting`,
-
-  'disney-villain': `Transform this image into a Disney Villain style character. Apply these characteristics:
-    - Dramatic, theatrical Disney villain aesthetic
-    - Sharp, angular features with striking bone structure
-    - Intense, piercing eyes with dramatic shadows
-    - Bold, high-contrast color palette (deep purples, greens, blacks)
-    - Theatrical lighting with dramatic shadows
-    - Elegant yet menacing presence like Maleficent, Ursula, or Scar
-    - Sophisticated, powerful aura
-    - Rich details and ornate styling`,
-
-  'frozen-style': `Transform this image into the Frozen movie animation style. Apply these characteristics:
-    - Modern Disney 3D animation with crystalline quality
-    - Cool color palette with icy blues, silvers, and whites
-    - Frost effects and snowflake details
-    - Soft, luminous skin with subtle cool undertones
-    - Large, expressive eyes like Elsa and Anna
-    - Elegant, Nordic-inspired aesthetic
-    - Ice crystal highlights
-    - Beautiful, wintry atmosphere`,
-
-  'encanto-style': `Transform this image into the Encanto movie animation style. Apply these characteristics:
-    - Vibrant, Colombian-inspired Disney animation
-    - Warm, rich color palette with tropical florals
-    - Curly, voluminous hair with beautiful texture
-    - Expressive features with warm, glowing skin tones
-    - Golden accents and butterfly motifs
-    - Lush, colorful environment elements
-    - Family-oriented warmth and charm like Mirabel
-    - Celebration of diversity and natural beauty`,
 };
 
 export async function transformToDisney(
@@ -82,7 +56,7 @@ export async function transformToDisney(
 
   const prompt = stylePrompts[style];
 
-  const response = await openai.images.edit({
+  const response = await getOpenAI().images.edit({
     model: 'gpt-image-1',
     image: imageFile,
     prompt,

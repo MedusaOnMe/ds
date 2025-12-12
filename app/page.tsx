@@ -5,10 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 type DisneyStyle =
   | 'pixar-3d'
   | 'classic-disney'
-  | 'disney-princess'
-  | 'disney-villain'
-  | 'frozen-style'
-  | 'encanto-style';
+  | 'disney-princess';
 
 interface StyleOption {
   id: DisneyStyle;
@@ -21,9 +18,6 @@ const styleOptions: StyleOption[] = [
   { id: 'pixar-3d', name: 'Pixar 3D', description: 'Toy Story, Up, Inside Out', emoji: '🎬' },
   { id: 'classic-disney', name: 'Classic Disney', description: 'Snow White, Cinderella', emoji: '👑' },
   { id: 'disney-princess', name: 'Disney Princess', description: 'Ariel, Belle, Rapunzel', emoji: '👸' },
-  { id: 'disney-villain', name: 'Disney Villain', description: 'Maleficent, Ursula', emoji: '🦹' },
-  { id: 'frozen-style', name: 'Frozen', description: 'Elsa, Anna style', emoji: '❄️' },
-  { id: 'encanto-style', name: 'Encanto', description: 'Mirabel, Colombian style', emoji: '🦋' },
 ];
 
 export default function Home() {
@@ -34,8 +28,16 @@ export default function Home() {
   const [gallery, setGallery] = useState<string[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<DisneyStyle>('pixar-3d');
+
+  const getStyleFromUrl = (url: string): string => {
+    const filename = url.split('/').pop() || '';
+    if (filename.includes('pixar-3d')) return 'Pixar 3D';
+    if (filename.includes('classic-disney')) return 'Classic Disney';
+    if (filename.includes('disney-princess')) return 'Disney Princess';
+    return 'Unknown';
+  };
 
   useEffect(() => {
     fetchGallery();
@@ -143,9 +145,11 @@ export default function Home() {
         {/* Header */}
         <header className="text-center mb-10">
           <div className="inline-block relative">
-            <h1 className="text-6xl md:text-7xl font-disney font-bold title-shimmer tracking-wide">
-              DISNEYIFY
-            </h1>
+            <img
+              src="/disney.png"
+              alt="DISNEYIFY"
+              className="h-24 md:h-32 mx-auto"
+            />
           </div>
           <p className="text-xl text-white/80 mt-4 font-body">Transform any image into a Disney character</p>
           <a
@@ -167,16 +171,16 @@ export default function Home() {
         {/* Style Selector */}
         <section className="mb-8">
           <h2 className="text-center text-lg font-semibold text-white/90 mb-4">Choose Your Disney Style</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {styleOptions.map((style) => (
               <button
                 key={style.id}
                 onClick={() => setSelectedStyle(style.id)}
-                className={`style-card text-center ${selectedStyle === style.id ? 'selected' : ''}`}
+                className={`style-card text-center py-6 ${selectedStyle === style.id ? 'selected' : ''}`}
               >
-                <div className="text-2xl mb-1">{style.emoji}</div>
-                <div className="font-semibold text-white text-sm">{style.name}</div>
-                <div className="text-xs text-white/60 mt-1">{style.description}</div>
+                <div className="text-3xl mb-2">{style.emoji}</div>
+                <div className="font-semibold text-white text-lg">{style.name}</div>
+                <div className="text-sm text-white/60 mt-1">{style.description}</div>
               </button>
             ))}
           </div>
@@ -274,28 +278,39 @@ export default function Home() {
 
         {/* Gallery Section */}
         <section>
-          <h2 className="text-3xl font-disney font-bold text-center mb-6">
-            <span className="title-shimmer">Gallery</span>
-          </h2>
+          <div className="flex justify-center mb-6">
+            <img
+              src="/gallery.png"
+              alt="Gallery"
+              className="h-16 md:h-20"
+            />
+          </div>
 
           {gallery.length === 0 ? (
             <p className="text-center text-white/50">No transformations yet. Be the first!</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {gallery.map((url, index) => (
-                <div
-                  key={index}
-                  className="disney-border gallery-card p-2 cursor-pointer"
-                  onClick={() => setLightboxImage(url)}
-                >
-                  <img
-                    src={url}
-                    alt={`Disney ${index + 1}`}
-                    className="w-full h-auto rounded-lg"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
+              {gallery.map((url, index) => {
+                const imageNumber = gallery.length - index;
+                return (
+                  <div
+                    key={index}
+                    className="disney-border gallery-card p-2 cursor-pointer"
+                    onClick={() => setLightboxIndex(index)}
+                  >
+                    <img
+                      src={url}
+                      alt={`Disney ${imageNumber}`}
+                      className="w-full h-auto rounded-lg"
+                      loading="lazy"
+                    />
+                    <div className="mt-2 flex justify-between items-center text-xs px-1">
+                      <span className="text-white/80 font-semibold">#{imageNumber}</span>
+                      <span className="text-disney-gold">{getStyleFromUrl(url)}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </section>
@@ -307,26 +322,31 @@ export default function Home() {
       </div>
 
       {/* Lightbox Modal */}
-      {lightboxImage && (
+      {lightboxIndex !== null && gallery[lightboxIndex] && (
         <div
           className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setLightboxImage(null)}
+          onClick={() => setLightboxIndex(null)}
         >
           <div className="relative max-w-4xl max-h-full">
+            <div className="absolute -top-12 left-0 right-0 text-center text-white">
+              <span className="bg-disney-purple/80 px-4 py-2 rounded-full text-sm font-semibold">
+                #{gallery.length - lightboxIndex} • {getStyleFromUrl(gallery[lightboxIndex])}
+              </span>
+            </div>
             <img
-              src={lightboxImage}
+              src={gallery[lightboxIndex]}
               alt="Disney fullsize"
-              className="max-w-full max-h-[90vh] disney-border"
+              className="max-w-full max-h-[80vh] disney-border"
               onClick={(e) => e.stopPropagation()}
             />
             <button
               className="absolute -top-4 -right-4 w-10 h-10 bg-disney-purple disney-border flex items-center justify-center text-xl hover:bg-disney-purple-light transition-colors text-white"
-              onClick={() => setLightboxImage(null)}
+              onClick={() => setLightboxIndex(null)}
             >
               ✕
             </button>
             <a
-              href={lightboxImage}
+              href={gallery[lightboxIndex]}
               download
               className="absolute -bottom-6 left-1/2 -translate-x-1/2 disney-button text-sm"
               onClick={(e) => e.stopPropagation()}

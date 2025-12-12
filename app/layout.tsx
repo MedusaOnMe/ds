@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { Cinzel, Quicksand } from 'next/font/google';
+import { Quicksand } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 
-const cinzel = Cinzel({
-  subsets: ['latin'],
-  display: 'swap',
+const winterIsComing = localFont({
+  src: '../public/fonts/Winter is coming.otf',
   variable: '--font-disney',
+  display: 'swap',
 });
 
 const quicksand = Quicksand({
@@ -25,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${quicksand.variable}`}>
+    <html lang="en" className={`${winterIsComing.variable} ${quicksand.variable}`}>
       <body className="min-h-screen font-body">
         {children}
       </body>
