@@ -1,16 +1,22 @@
 import type { Metadata } from 'next';
-import { Comic_Neue } from 'next/font/google';
+import { Cinzel, Quicksand } from 'next/font/google';
 import './globals.css';
 
-const comicNeue = Comic_Neue({
-  weight: ['400', '700'],
+const cinzel = Cinzel({
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-disney',
+});
+
+const quicksand = Quicksand({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-body',
 });
 
 export const metadata: Metadata = {
-  title: 'JAKIFICATION',
-  description: 'Transform any image into a Wojak meme',
+  title: 'DISNEYIFY',
+  description: 'Transform any image into a Disney character',
 };
 
 export default function RootLayout({
@@ -19,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`min-h-screen ${comicNeue.className}`}>
+    <html lang="en" className={`${cinzel.variable} ${quicksand.variable}`}>
+      <body className="min-h-screen font-body">
         {children}
       </body>
     </html>

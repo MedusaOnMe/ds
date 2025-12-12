@@ -2,6 +2,30 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+type DisneyStyle =
+  | 'pixar-3d'
+  | 'classic-disney'
+  | 'disney-princess'
+  | 'disney-villain'
+  | 'frozen-style'
+  | 'encanto-style';
+
+interface StyleOption {
+  id: DisneyStyle;
+  name: string;
+  description: string;
+  emoji: string;
+}
+
+const styleOptions: StyleOption[] = [
+  { id: 'pixar-3d', name: 'Pixar 3D', description: 'Toy Story, Up, Inside Out', emoji: '🎬' },
+  { id: 'classic-disney', name: 'Classic Disney', description: 'Snow White, Cinderella', emoji: '👑' },
+  { id: 'disney-princess', name: 'Disney Princess', description: 'Ariel, Belle, Rapunzel', emoji: '👸' },
+  { id: 'disney-villain', name: 'Disney Villain', description: 'Maleficent, Ursula', emoji: '🦹' },
+  { id: 'frozen-style', name: 'Frozen', description: 'Elsa, Anna style', emoji: '❄️' },
+  { id: 'encanto-style', name: 'Encanto', description: 'Mirabel, Colombian style', emoji: '🦋' },
+];
+
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -11,8 +35,8 @@ export default function Home() {
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<DisneyStyle>('pixar-3d');
 
-  // Fetch gallery on load
   useEffect(() => {
     fetchGallery();
   }, []);
@@ -22,7 +46,7 @@ export default function Home() {
       const res = await fetch('/api/gallery');
       const data = await res.json();
       if (data.images) {
-        setGallery(data.images.reverse()); // Newest first
+        setGallery(data.images.reverse());
       }
     } catch (err) {
       console.error('Failed to fetch gallery:', err);
@@ -66,6 +90,7 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append('image', selectedFile);
+      formData.append('style', selectedStyle);
 
       const res = await fetch('/api/transform', {
         method: 'POST',
@@ -79,7 +104,6 @@ export default function Home() {
       }
 
       setResultImage(data.url);
-      // Add to gallery
       setGallery(prev => [data.url, ...prev]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -89,12 +113,12 @@ export default function Home() {
   };
 
   const loadingMessages = [
-    'Extracting feels...',
-    'Applying wojak essence...',
-    'Channeling the void...',
-    'why even live...',
-    'tfw transforming...',
-    'Making it cursed...',
+    'Processing image...',
+    'Applying style...',
+    'Rendering transformation...',
+    'Almost there...',
+    'Finalizing...',
+    'Just a moment...',
   ];
 
   const [loadingMessage, setLoadingMessage] = useState(loadingMessages[0]);
@@ -109,29 +133,30 @@ export default function Home() {
   }, [isTransforming]);
 
   return (
-    <main className="min-h-screen py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen py-8 px-4 relative z-10">
+      <div className="max-w-5xl mx-auto">
         {/* CA Banner */}
         <div className="text-center mb-4">
-          <p className="font-bold text-gray-700">CA: coming soon</p>
+          <p className="font-semibold text-disney-gold/80 tracking-wider text-sm">CA: coming soon</p>
         </div>
 
         {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-6xl font-bold text-gray-800 mb-2" style={{ textShadow: '4px 4px 0 #4a90a4' }}>
-            JAKIFICATION
-          </h1>
-          <p className="text-xl text-gray-600">transform any image into a wojak meme</p>
-          <p className="text-sm text-gray-500 mt-1">tfw you become a feels guy</p>
+        <header className="text-center mb-10">
+          <div className="inline-block relative">
+            <h1 className="text-6xl md:text-7xl font-disney font-bold title-shimmer tracking-wide">
+              DISNEYIFY
+            </h1>
+          </div>
+          <p className="text-xl text-white/80 mt-4 font-body">Transform any image into a Disney character</p>
           <a
-            href="https://x.com/Jakification"
+            href="https://x.com/DisneyifyOnSol"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-3 p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="inline-block mt-4 p-3 hover:bg-white/10 rounded-full transition-all duration-300 hover:scale-110"
           >
             <svg
               viewBox="0 0 24 24"
-              className="w-6 h-6 fill-gray-700 hover:fill-black"
+              className="w-6 h-6 fill-white/70 hover:fill-disney-gold transition-colors"
               aria-label="X (Twitter)"
             >
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -139,10 +164,28 @@ export default function Home() {
           </a>
         </header>
 
+        {/* Style Selector */}
+        <section className="mb-8">
+          <h2 className="text-center text-lg font-semibold text-white/90 mb-4">Choose Your Disney Style</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {styleOptions.map((style) => (
+              <button
+                key={style.id}
+                onClick={() => setSelectedStyle(style.id)}
+                className={`style-card text-center ${selectedStyle === style.id ? 'selected' : ''}`}
+              >
+                <div className="text-2xl mb-1">{style.emoji}</div>
+                <div className="font-semibold text-white text-sm">{style.name}</div>
+                <div className="text-xs text-white/60 mt-1">{style.description}</div>
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* Upload Section */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div
-            className={`upload-zone p-8 text-center cursor-pointer ${dragOver ? 'dragover' : ''}`}
+            className={`upload-zone p-10 text-center cursor-pointer ${dragOver ? 'dragover' : ''}`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -158,32 +201,32 @@ export default function Home() {
 
             {!preview ? (
               <div>
-                <div className="text-6xl mb-4">📷</div>
-                <p className="text-xl text-gray-700">Drop an image here or click to upload</p>
-                <p className="text-sm text-gray-500 mt-2">PNG, JPG, WEBP supported</p>
+                <div className="text-6xl mb-4 float">🏰</div>
+                <p className="text-xl text-white/90 font-semibold">Drop an image here or click to upload</p>
+                <p className="text-sm text-white/50 mt-2">PNG, JPG, WEBP supported</p>
               </div>
             ) : (
               <div className="flex flex-col md:flex-row items-center justify-center gap-8">
                 <div>
-                  <p className="text-sm text-gray-500 mb-2">Original</p>
+                  <p className="text-sm text-white/60 mb-2 font-semibold">Original</p>
                   <img
                     src={preview}
                     alt="Preview"
-                    className="max-w-xs max-h-64 wojak-border"
+                    className="max-w-xs max-h-64 disney-border"
                   />
                 </div>
 
                 {isTransforming && (
-                  <div className="text-4xl wobble">➡️</div>
+                  <div className="text-4xl wand-wave">➡️</div>
                 )}
 
                 {resultImage && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-2">Wojakified</p>
+                    <p className="text-sm text-disney-gold mb-2 font-semibold">Disneyified!</p>
                     <img
                       src={resultImage}
-                      alt="Wojak Result"
-                      className="max-w-xs max-h-64 wojak-border"
+                      alt="Disney Result"
+                      className="max-w-xs max-h-64 disney-border"
                     />
                   </div>
                 )}
@@ -197,12 +240,12 @@ export default function Home() {
               <button
                 onClick={handleTransform}
                 disabled={isTransforming}
-                className="wojak-button text-xl"
+                className="disney-button text-xl px-10"
               >
                 {isTransforming ? (
-                  <span className="pulse-slow">{loadingMessage}</span>
+                  <span className="pulse-glow">{loadingMessage}</span>
                 ) : (
-                  'JAKIFY ME'
+                  'DISNEYIFY ME'
                 )}
               </button>
 
@@ -213,7 +256,7 @@ export default function Home() {
                     setPreview(null);
                     setResultImage(null);
                   }}
-                  className="ml-4 text-gray-600 underline hover:text-gray-800"
+                  className="ml-4 text-white/60 underline hover:text-white transition-colors"
                 >
                   clear
                 </button>
@@ -223,7 +266,7 @@ export default function Home() {
 
           {/* Error Message */}
           {error && (
-            <div className="mt-4 p-4 bg-red-100 border-2 border-red-400 rounded text-red-700 text-center">
+            <div className="mt-4 p-4 bg-red-900/30 border-2 border-red-500/50 rounded-xl text-red-300 text-center backdrop-blur-sm">
               {error}
             </div>
           )}
@@ -231,24 +274,24 @@ export default function Home() {
 
         {/* Gallery Section */}
         <section>
-          <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
-            Gallery of Feels
+          <h2 className="text-3xl font-disney font-bold text-center mb-6">
+            <span className="title-shimmer">Gallery</span>
           </h2>
 
           {gallery.length === 0 ? (
-            <p className="text-center text-gray-500">No wojaks yet. Be the first!</p>
+            <p className="text-center text-white/50">No transformations yet. Be the first!</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {gallery.map((url, index) => (
                 <div
                   key={index}
-                  className="wojak-border bg-white p-2 cursor-pointer hover:scale-105 transition-transform"
+                  className="disney-border gallery-card p-2 cursor-pointer"
                   onClick={() => setLightboxImage(url)}
                 >
                   <img
                     src={url}
-                    alt={`Wojak ${index + 1}`}
-                    className="w-full h-auto"
+                    alt={`Disney ${index + 1}`}
+                    className="w-full h-auto rounded-lg"
                     loading="lazy"
                   />
                 </div>
@@ -258,26 +301,26 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="text-center mt-12 text-gray-500 text-sm">
-          <p>powered by feels</p>
+        <footer className="text-center mt-16 text-white/40 text-sm">
+          <p>Powered by OpenAI</p>
         </footer>
       </div>
 
       {/* Lightbox Modal */}
       {lightboxImage && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setLightboxImage(null)}
         >
           <div className="relative max-w-4xl max-h-full">
             <img
               src={lightboxImage}
-              alt="Wojak fullsize"
-              className="max-w-full max-h-[90vh] wojak-border"
+              alt="Disney fullsize"
+              className="max-w-full max-h-[90vh] disney-border"
               onClick={(e) => e.stopPropagation()}
             />
             <button
-              className="absolute -top-4 -right-4 w-10 h-10 bg-white wojak-border flex items-center justify-center text-2xl hover:bg-gray-100"
+              className="absolute -top-4 -right-4 w-10 h-10 bg-disney-purple disney-border flex items-center justify-center text-xl hover:bg-disney-purple-light transition-colors text-white"
               onClick={() => setLightboxImage(null)}
             >
               ✕
@@ -285,7 +328,7 @@ export default function Home() {
             <a
               href={lightboxImage}
               download
-              className="absolute -bottom-4 left-1/2 -translate-x-1/2 wojak-button text-sm"
+              className="absolute -bottom-6 left-1/2 -translate-x-1/2 disney-button text-sm"
               onClick={(e) => e.stopPropagation()}
             >
               📥 Download

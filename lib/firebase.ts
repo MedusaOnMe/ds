@@ -27,7 +27,7 @@ const storage = getStorage();
 const bucket = storage.bucket();
 
 export async function uploadImage(buffer: Buffer, filename: string): Promise<string> {
-  const file = bucket.file(`wojaks/${filename}`);
+  const file = bucket.file(`disney/${filename}`);
 
   await file.save(buffer, {
     metadata: {
@@ -37,14 +37,14 @@ export async function uploadImage(buffer: Buffer, filename: string): Promise<str
 
   await file.makePublic();
 
-  return `https://storage.googleapis.com/${bucket.name}/wojaks/${filename}`;
+  return `https://storage.googleapis.com/${bucket.name}/disney/${filename}`;
 }
 
 export async function getGalleryImages(): Promise<string[]> {
-  const [files] = await bucket.getFiles({ prefix: 'wojaks/' });
+  const [files] = await bucket.getFiles({ prefix: 'disney/' });
 
   const urls = files
-    .filter(file => file.name !== 'wojaks/')
+    .filter(file => file.name !== 'disney/')
     .map(file => `https://storage.googleapis.com/${bucket.name}/${file.name}`);
 
   return urls;
