@@ -43,9 +43,20 @@ export async function uploadImage(buffer: Buffer, filename: string): Promise<str
 export async function getGalleryImages(): Promise<string[]> {
   const [files] = await bucket.getFiles({ prefix: 'disney/' });
 
-  const urls = files
-    .filter(file => file.name !== 'disney/')
-    .map(file => `https://storage.googleapis.com/${bucket.name}/${file.name}`);
+  const filteredFiles = files.filter(file => file.name !== 'disney/');
+
+  // Sort by timestamp in filename (disney_style_TIMESTAMP.png)
+  filteredFiles.sort((a, b) => {
+    const getTimestamp = (name: string) => {
+      const match = name.match(/_(\d+)\.png$/);
+      return match ? parseInt(match[1], 10) : 0;
+    };
+    return getTimestamp(a.name) - getTimestamp(b.name);
+  });
+
+  const urls = filteredFiles.map(
+    file => `https://storage.googleapis.com/${bucket.name}/${file.name}`
+  );
 
   return urls;
 }
