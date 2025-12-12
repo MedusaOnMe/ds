@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getGalleryImages } from '@/lib/firebase';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const images = await getGalleryImages();
