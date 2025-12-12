@@ -22,8 +22,7 @@ module.exports = {
         'disney-card': '#252040',
       },
       fontFamily: {
-        'disney': ['Cinzel', 'serif'],
-        'body': ['Quicksand', 'sans-serif'],
+        'disney': ['var(--font-disney)', 'sans-serif'],
       },
       backgroundImage: {
         'disney-gradient': 'linear-gradient(135deg, #1A1429 0%, #0F0A1A 50%, #1A1429 100%)',

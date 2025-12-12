@@ -151,9 +151,9 @@ export default function Home() {
               className="h-24 md:h-32 mx-auto"
             />
           </div>
-          <p className="text-xl text-white/80 mt-4 font-body">Transform any image into a Disney character</p>
+          <p className="text-xl text-white/80 mt-4">Transform any image into a Disney character</p>
           <a
-            href="https://x.com/DisneyifyOnSol"
+            href="https://x.com/i/communities/1999444245732556884"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block mt-4 p-3 hover:bg-white/10 rounded-full transition-all duration-300 hover:scale-110"
@@ -315,10 +315,6 @@ export default function Home() {
           )}
         </section>
 
-        {/* Footer */}
-        <footer className="text-center mt-16 text-white/40 text-sm">
-          <p>Powered by OpenAI</p>
-        </footer>
       </div>
 
       {/* Lightbox Modal */}

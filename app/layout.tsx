@@ -1,18 +1,10 @@
 import type { Metadata } from 'next';
 import { Quicksand } from 'next/font/google';
-import localFont from 'next/font/local';
 import './globals.css';
-
-const winterIsComing = localFont({
-  src: '../public/fonts/Winter is coming.otf',
-  variable: '--font-disney',
-  display: 'swap',
-});
 
 const quicksand = Quicksand({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-body',
 });
 
 export const metadata: Metadata = {
@@ -26,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${winterIsComing.variable} ${quicksand.variable}`}>
-      <body className="min-h-screen font-body">
+    <html lang="en" className={quicksand.className}>
+      <body className="min-h-screen">
         {children}
       </body>
     </html>
